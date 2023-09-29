@@ -8,8 +8,8 @@ import (
 
 	_ "embed"
 
-	mapsutil "github.com/khulnasoft-labs/utils/maps"
-	stringsutil "github.com/khulnasoft-labs/utils/strings"
+	mapsutil "github.com/khulnasoft-lab/utils/maps"
+	stringsutil "github.com/khulnasoft-lab/utils/strings"
 	"golang.org/x/exp/maps"
 )
 

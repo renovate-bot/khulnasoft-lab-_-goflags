@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/khulnasoft-labs/goflags"
+	"github.com/khulnasoft-lab/goflags"
 )
 
 type Options struct {

@@ -1,10 +1,10 @@
-module github.com/khulnasoft-labs/goflags
+module github.com/khulnasoft-lab/goflags
 
 go 1.20
 
 require (
 	github.com/cnf/structhash v0.0.0-20201127153200-e1b16c1ebc08
-	github.com/khulnasoft-labs/utils v0.0.45
+	github.com/khulnasoft-lab/utils v0.0.45
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
@@ -16,7 +16,7 @@ require (
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
-	github.com/khulnasoft-labs/blackrock v0.0.1 // indirect
+	github.com/khulnasoft-lab/blackrock v0.0.1 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.24 // indirect
 	github.com/miekg/dns v1.1.55 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect

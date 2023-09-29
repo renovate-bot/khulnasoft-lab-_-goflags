@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	fileutil "github.com/khulnasoft-labs/utils/file"
+	fileutil "github.com/khulnasoft-lab/utils/file"
 )
 
 type Size int

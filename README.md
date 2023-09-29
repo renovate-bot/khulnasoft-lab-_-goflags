@@ -1,9 +1,9 @@
 # goflags
 
-[![License](https://img.shields.io/github/license/khulnasoft-labs/goflags)](LICENSE.md)
-![Go version](https://img.shields.io/github/go-mod/go-version/khulnasoft-labs/nuclei?filename=v2%2Fgo.mod)
-[![Release](https://img.shields.io/github/release/khulnasoft-labs/goflags)](https://github.com/khulnasoft-labs/goflags/releases/)
-[![Checks](https://github.com/khulnasoft-labs/goflags/actions/workflows/build-test.yml/badge.svg)](https://github.com/khulnasoft-labs/goflags/actions/workflows/build-test.yml)
+[![License](https://img.shields.io/github/license/khulnasoft-lab/goflags)](LICENSE.md)
+![Go version](https://img.shields.io/github/go-mod/go-version/khulnasoft-lab/nuclei?filename=v2%2Fgo.mod)
+[![Release](https://img.shields.io/github/release/khulnasoft-lab/goflags)](https://github.com/khulnasoft-lab/goflags/releases/)
+[![Checks](https://github.com/khulnasoft-lab/goflags/actions/workflows/build-test.yml/badge.svg)](https://github.com/khulnasoft-lab/goflags/actions/workflows/build-test.yml)
 
 An extension of the go `flag` library that adds convenience functions and functionalities like config file, better usage, short and long flag support, custom types for string slices and maps etc.
 
@@ -73,7 +73,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/khulnasoft-labs/goflags"
+	"github.com/khulnasoft-lab/goflags"
 )
 
 type options struct {

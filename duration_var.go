@@ -3,7 +3,7 @@ package goflags
 import (
 	"errors"
 	"time"
-	timeutil "github.com/khulnasoft-labs/utils/time"
+	timeutil "github.com/khulnasoft-lab/utils/time"
 )
 
 type durationValue time.Duration
