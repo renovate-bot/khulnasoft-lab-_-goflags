@@ -7,7 +7,6 @@ import (
 	"io"
 	"os"
 	"path"
-	"path/filepath"
 	"reflect"
 	"strconv"
 	"strings"
@@ -16,6 +15,8 @@ import (
 
 	"github.com/cnf/structhash"
 	fileutil "github.com/khulnasoft-lab/utils/file"
+	folderutil "github.com/khulnasoft-lab/utils/folder"
+	permissionutil "github.com/khulnasoft-lab/utils/permission"
 	"golang.org/x/exp/maps"
 	"gopkg.in/yaml.v3"
 )
@@ -25,6 +26,7 @@ type FlagSet struct {
 	CaseSensitive  bool
 	Marshal        bool
 	description    string
+	customHelpText string
 	flagKeys       InsertionOrderedMap
 	groups         []groupData
 	CommandLine    *flag.FlagSet
@@ -82,6 +84,11 @@ func (flagSet *FlagSet) SetDescription(description string) {
 	flagSet.description = description
 }
 
+// SetCustomHelpText sets the help text for a flagSet to a value. This variable appends text to the default help text.
+func (flagSet *FlagSet) SetCustomHelpText(helpText string) {
+	flagSet.customHelpText = helpText
+}
+
 // SetGroup sets a group with name and description for the command line options
 //
 // The order in which groups are passed is also kept as is, similar to flags.
@@ -99,18 +106,38 @@ func (flagSet *FlagSet) Parse() error {
 	flagSet.CommandLine.SetOutput(os.Stdout)
 	flagSet.CommandLine.Usage = flagSet.usageFunc
 	_ = flagSet.CommandLine.Parse(os.Args[1:])
+	configFilePath, _ := flagSet.GetConfigFilePath()
 
-	configFilePath, err := flagSet.GetConfigFilePath()
-	if err != nil {
-		return err
-	}
-	_ = os.MkdirAll(filepath.Dir(configFilePath), os.ModePerm)
+	// migrate data from old config dir to new one
+	// Ref: https://github.com/khulnasoft-lab/nuclei/issues/3576
+	flagSet.migrateConfigDir()
+
+	// if config file doesn't exist, create one
 	if !fileutil.FileExists(configFilePath) {
 		configData := flagSet.generateDefaultConfig()
-		return os.WriteFile(configFilePath, configData, os.ModePerm)
+		configFileDir := flagSet.GetToolConfigDir()
+		if !fileutil.FolderExists(configFileDir) {
+			_ = fileutil.CreateFolder(configFileDir)
+		}
+		return os.WriteFile(configFilePath, configData, permissionutil.ConfigFilePermission)
 	}
+
 	_ = flagSet.MergeConfigFile(configFilePath) // try to read default config after parsing flags
 	return nil
+}
+
+func (flagSet *FlagSet) migrateConfigDir() {
+	// migration condition
+	// 1. old config dir exists
+	// 2. new config dir doesn't exist
+	// 3. old config dir is not same as new config dir
+
+	toolConfigDir := flagSet.GetToolConfigDir()
+	if toolConfigDir != oldAppConfigDir && fileutil.FolderExists(oldAppConfigDir) && !fileutil.FolderExists(toolConfigDir) {
+		_ = fileutil.CreateFolder(toolConfigDir)
+		// move old config dir to new one
+		_ = folderutil.SyncDirectory(oldAppConfigDir, toolConfigDir)
+	}
 }
 
 // generateDefaultConfig generates a default YAML config file for a flagset.
@@ -480,6 +507,41 @@ func (flagSet *FlagSet) EnumVarP(field *string, long, short string, defaultValue
 	return flagData
 }
 
+// EnumVar adds a enum flag with a longname
+func (flagSet *FlagSet) EnumSliceVar(field *[]string, long string, defaultValues []EnumVariable, usage string, allowedTypes AllowdTypes) *FlagData {
+	return flagSet.EnumSliceVarP(field, long, "", defaultValues, usage, allowedTypes)
+}
+
+// EnumVarP adds a enum flag with a shortname and longname
+func (flagSet *FlagSet) EnumSliceVarP(field *[]string, long, short string, defaultValues []EnumVariable, usage string, allowedTypes AllowdTypes) *FlagData {
+	var defaults []string
+	for k, v := range allowedTypes {
+		for _, defaultValue := range defaultValues {
+			if v == defaultValue {
+				defaults = append(defaults, k)
+			}
+		}
+	}
+	if len(defaults) == 0 {
+		panic("undefined default value")
+	}
+
+	*field = defaults
+	flagData := &FlagData{
+		usage:        usage,
+		long:         long,
+		defaultValue: strings.Join(*field, ","),
+	}
+	if short != "" {
+		flagData.short = short
+		flagSet.CommandLine.Var(&EnumSliceVar{allowedTypes, field}, short, usage)
+		flagSet.flagKeys.Set(short, flagData)
+	}
+	flagSet.CommandLine.Var(&EnumSliceVar{allowedTypes, field}, long, usage)
+	flagSet.flagKeys.Set(long, flagData)
+	return flagData
+}
+
 func (flagSet *FlagSet) usageFunc() {
 	var helpAsked bool
 
@@ -501,8 +563,7 @@ func (flagSet *FlagSet) usageFunc() {
 
 	writer := tabwriter.NewWriter(cliOutput, 0, 0, 1, ' ', 0)
 
-	// If user has specified group with help and we have groups, return
-	// with it's usage function
+	// If a user has specified a group with help, and we have groups, return with the tool's usage function
 	if len(flagSet.groups) > 0 && len(os.Args) == 3 {
 		group := flagSet.getGroupbyName(strings.ToLower(os.Args[2]))
 		if group.name != "" {
@@ -520,6 +581,11 @@ func (flagSet *FlagSet) usageFunc() {
 		flagSet.usageFuncForGroups(cliOutput, writer)
 	} else {
 		flagSet.usageFuncInternal(writer)
+	}
+
+	// If there is a custom help text specified, print it
+	if !isEmpty(flagSet.customHelpText) {
+		fmt.Fprintf(cliOutput, "\n%s\n", flagSet.customHelpText)
 	}
 }
 
@@ -641,10 +707,6 @@ func (u *uniqueDeduper) isUnique(data *FlagData) bool {
 	return true
 }
 
-func isNotBlank(value string) bool {
-	return len(strings.TrimSpace(value)) != 0
-}
-
 func createUsageString(data *FlagData, currentFlag *flag.Flag) string {
 	valueType := reflect.TypeOf(currentFlag.Value)
 
@@ -703,7 +765,7 @@ func createUsageFlagNames(data *FlagData) string {
 
 	var validFlags []string
 	addValidParam := func(value string) {
-		if isNotBlank(value) {
+		if !isEmpty(value) {
 			validFlags = append(validFlags, fmt.Sprintf("-%s", value))
 		}
 	}
