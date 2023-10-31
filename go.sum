@@ -8,8 +8,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/gorilla/css v1.0.0 h1:BQqNyPTi50JCFMTw/b67hByjMVXZRwGha6wxVGkeihY=
 github.com/gorilla/css v1.0.0/go.mod h1:Dn721qIggHpt4+EFCcTLTU/vk5ySda2ReITrtgBl60c=
-github.com/khulnasoft-lab/blackrock v0.0.3 h1:oDLnl6985Po+JhaNDnugD4uofycuMR2BI/Ip/yEC4UE=
-github.com/khulnasoft-lab/blackrock v0.0.3/go.mod h1:Upg2tduxXxOVf1T6XhG/1RUBVZqORH+Rj9QBmM1oIDU=
+github.com/khulnasoft-lab/blackrock v0.0.5 h1:bO0AyWFsl5UR+/L5nY1UaLZ5vNX687AeDsfx7NeB374=
+github.com/khulnasoft-lab/blackrock v0.0.5/go.mod h1:Upg2tduxXxOVf1T6XhG/1RUBVZqORH+Rj9QBmM1oIDU=
 github.com/khulnasoft-lab/utils v0.0.46 h1:Hp/LQV8Hf/p2+xh5j4bOlO9TB652YZQGOc9UTJOp1vw=
 github.com/khulnasoft-lab/utils v0.0.46/go.mod h1:IeqfAsT15I7KccLjpPTtyPmQ/LhAZnJ9UWZiPBPRnQs=
 github.com/microcosm-cc/bluemonday v1.0.25 h1:4NEwSfiJ+Wva0VxN5B8OwMicaJvD8r9tlJWm9rtloEg=
