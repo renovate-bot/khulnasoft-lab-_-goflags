@@ -6,7 +6,7 @@ require (
 	github.com/cnf/structhash v0.0.0-20201127153200-e1b16c1ebc08
 	github.com/khulnasoft-lab/utils v0.0.46
 	github.com/pkg/errors v0.9.1
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.10.0
 	golang.org/x/exp v0.0.0-20221019170559-20944726eadf
 	gopkg.in/yaml.v3 v3.0.1
 )
