@@ -3,7 +3,7 @@ module github.com/khulnasoft-lab/goflags
 go 1.20
 
 require (
-	github.com/cnf/structhash v0.0.0-20201127153200-e1b16c1ebc08
+	github.com/cnf/structhash v0.0.0-20250313080605-df4c6cc74a9a
 	github.com/khulnasoft-lab/utils v0.0.46
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.10.0
